@@ -4,9 +4,16 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  template: '',
+  styles: [
+    `
+      :host {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+    `,
+  ],
 })
-export class App {
-  protected readonly title = signal('mapa-hogar');
-}
+export class App {}
