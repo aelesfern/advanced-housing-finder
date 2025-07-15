@@ -1,59 +1,104 @@
-# MapaHogar
+# Mapa Hogar
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-## Development server
+## Table of Contents
 
-To start a local development server, run:
+1. [Overview](#overview)
+2. [Features](#features)
+3. [How It Works](#how-it-works)
+4. [Getting Started](#getting-started)
+5. [Usage](#usage)
+6. [AI in Development](#ai-in-development)
+7. [AI for Future Evolution](#ai-for-future-evolution)
+8. [Contributing](#contributing)
+9. [Testing](#testing)
+10. [License](#license)
+11. [Contact](#contact)
 
-```bash
-ng serve
-```
+## Overview
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Mapa Hogar helps users find the ideal place to live in Spain based on their personal needs and preferences. The application integrates multiple layers of information to make it easier to identify recommended towns or areas according to user interests.
 
-## Code scaffolding
+What kind of information can you search?
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Find points of interest (hospitals, health centers, educational centers, etc.)
+- Display areas within a maximum driving distance from these points
+- Show and filter municipalities by population size, or by minimum population in specific age ranges
+- Show and filter municipalities by average temperatures and precipitation across different seasons
 
-```bash
-ng generate component component-name
-```
+## Features
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Interactive map to explore and filter towns and regions
+- Search for points of interest (hospitals, schools, health centers, etc.)
+- Filter towns by proximity to selected points of interest (e.g., within X minutes by car)
+- Filter towns by population size and age demographics
+- Filter towns by climate data (average temperature and precipitation by season)
+- Display travel times and routes to key facilities
+- View detailed profiles for each town (demographics, services, climate, etc.)
+- Multi-layer visualization (combine filters for more precise results)
+- Integration with external data sources (government, weather, education)
+- Save the current search for future use
 
-```bash
-ng generate --help
-```
+## How It Works
 
-## Building
+Mapa Hogar is built as a modern web application using Angular for the frontend. The architecture is designed to be modular, scalable, and maintainable, with a
+focus on user experience and data accuracy.
 
-To build the project run:
+**Architecture Overview:**
 
-```bash
-ng build
-```
+- **Frontend (Angular):**
+  - Interactive map interface for exploring and filtering towns.
+  - Dynamic forms and filters for user input.
+  - Loads data from local JSON files or APIs as needed.
+  - Visualization of multiple data layers (demographics, climate, points of interest).
+  - State management for user selections and saved searches
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- **Data Sources:**
+  - Local JSON files for static datasets (e.g., population, facilities, climate).
+  - External APIs for dynamic or updated information (e.g., weather, government data).
 
-## Running unit tests
+**Main Workflow:**
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+1. User interacts with the map and sets filters.
+2. The frontend loads and filters data from JSON files and/or APIs based on user criteria.
+3. Results are displayed on the map and in detailed town profiles.
+4. Users can save their current search for future use.
 
-```bash
-ng test
-```
+## Usage
 
-## Running end-to-end tests
+Basic usage instructions, screenshots, and examples.
 
-For end-to-end (e2e) testing, run:
+### Example: Finding Suitable Towns
 
-```bash
-ng e2e
-```
+Suppose you want to find towns in the northern part of Spain that meet the following criteria:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- At least 2 schools
+- Fewer than 30,000 inhabitants
+- Within 1 hour driving distance to a hospital
 
-## Additional Resources
+Steps:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Navigate into the northern region of Spain on the map.
+2. Use the filters to set:
+   - Minimum number of schools: 2
+   - Maximum population: 30,000
+   - Maximum driving time to hospital: 1 hour
+3. View the results to see recommended towns that match your criteria.
+
+## Contributing
+
+Guidelines for contributing, code style, and using AI tools.
+
+## Testing
+
+How to run unit and E2E tests, including commands.
+
+## License
+
+MIT License
+
+## Contact
+
+Contact information or support channels.
