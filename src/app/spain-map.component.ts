@@ -23,17 +23,38 @@ export class SpainMapComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const mapContainer = this.el.nativeElement.querySelector('.map-container');
+
+    // Max bounds include islands for panning, but fitBounds will focus on mainland
+    const spainBounds: L.LatLngBoundsExpression = [
+      [27.0, -18.5], // Southwest (Canary Islands, SW Spain)
+      [44.5, 5.0], // Northeast (Pyrenees, NE Spain, with extra space)
+    ];
+
+    // Mainland Spain bounds for initial zoom
+    const mainlandBounds: L.LatLngBoundsExpression = [
+      [35.9, -9.5], // Southwest (Andalusia)
+      [43.9, 3.3], // Northeast (Catalonia, Basque Country)
+    ];
+
     this.map = L.map(mapContainer, {
-      center: [40.4637, -3.7492], // Center of Spain
-      zoom: 6,
+      center: [40.4637, -3.7492],
+      zoom: 7,
       zoomControl: true,
       attributionControl: true,
+      maxBounds: spainBounds,
+      maxBoundsViscosity: 1.0,
+      minZoom: 7,
+      maxZoom: 10,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
+      maxZoom: 10,
+      minZoom: 7,
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
+
+    // Fit to mainland bounds on load (ignores islands for zoom)
+    this.map.fitBounds(mainlandBounds);
   }
 
   ngOnDestroy(): void {
