@@ -47,11 +47,51 @@ export class SpainMapComponent implements OnInit, OnDestroy {
       maxZoom: 10,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 10,
-      minZoom: 7,
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
+    // Define base layers
+    const osm = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 10,
+        minZoom: 7,
+        attribution: '© OpenStreetMap contributors',
+      },
+    );
+    const cartoDark = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      {
+        maxZoom: 10,
+        minZoom: 7,
+        attribution: '© CartoDB',
+      },
+    );
+    const esriWorldImagery = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 10,
+        minZoom: 7,
+        attribution: 'Tiles © Esri',
+      },
+    );
+    const cartoPositron = L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {
+        maxZoom: 10,
+        minZoom: 7,
+        attribution: '© CartoDB',
+      },
+    );
+
+    // Add default layer
+    osm.addTo(this.map);
+
+    // Add layer control with all layers
+    const baseLayers = {
+      'Mapa estándar (OpenStreetMap)': osm,
+      'Mapa oscuro (CartoDB Dark Matter)': cartoDark,
+      'Satélite (Esri World Imagery)': esriWorldImagery,
+      'Mapa claro (CartoDB Positron)': cartoPositron,
+    };
+    L.control.layers(baseLayers).addTo(this.map);
 
     // Fit to mainland bounds on load (ignores islands for zoom)
     this.map.fitBounds(mainlandBounds);
