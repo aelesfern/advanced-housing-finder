@@ -11,6 +11,9 @@ import {
   BASE_LAYERS,
 } from './map.config';
 
+import markers from '../scripts/poblacion_municipios_filtrado.json';
+import { Marker } from './markers.interface';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,6 +24,8 @@ export class MapService {
    */
   initMap(mapContainer: HTMLElement): L.Map | undefined {
     if (!this._map) {
+      console.log('Por aqui');
+
       this._map = this.createMap(mapContainer);
     } else {
       // Move the map's container to the new DOM element if needed
@@ -41,6 +46,8 @@ export class MapService {
   }
 
   private _map?: L.Map;
+
+  private markers: Marker[] = markers;
 
   private createMap(mapContainer: HTMLElement): L.Map {
     const map = L.map(mapContainer, {
@@ -64,6 +71,7 @@ export class MapService {
     });
     L.control.layers(baseLayersObj).addTo(map);
     map.fitBounds(MAINLAND_SPAIN_BOUNDS);
+    this.addMarkers(map);
     return map;
   }
 
@@ -85,5 +93,14 @@ export class MapService {
 
   fitBounds(bounds: L.LatLngBoundsExpression): void {
     this._map?.fitBounds(bounds);
+  }
+
+  private addMarkers(map: L.Map) {
+    if (map) {
+      this.markers.forEach((marker) => {
+        const leafletMarker = L.marker([marker.lat, marker.lng]).addTo(map);
+        leafletMarker.bindPopup(`${marker.Nombre} (${marker.CP})`);
+      });
+    }
   }
 }

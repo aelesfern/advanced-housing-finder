@@ -1,4 +1,11 @@
-import { Component, ElementRef, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  AfterViewInit,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { MapService } from './map.service';
 
 @Component({
@@ -16,16 +23,15 @@ import { MapService } from './map.service';
     `,
   ],
 })
-
 export class SpainMapComponent implements AfterViewInit, OnDestroy {
   private map?: L.Map;
 
-  @ViewChild('mapContainer', { static: false }) mapContainerRef!: ElementRef<HTMLElement>;
+  mapContainerRef = viewChild.required<ElementRef<HTMLElement>>('mapContainer');
 
-  constructor(private mapService: MapService) {}
+  private mapService = inject(MapService);
 
   ngAfterViewInit(): void {
-    const mapContainer = this.mapContainerRef.nativeElement;
+    const mapContainer = this.mapContainerRef().nativeElement;
     this.map = this.mapService.initMap(mapContainer);
   }
 

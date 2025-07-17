@@ -1,9 +1,13 @@
 import pandas as pd
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+import time
 
 # Ruta al archivo original
 archivo_entrada = 'poblacion_municipios_original.csv'
 # Ruta del archivo de salida
-archivo_salida = 'poblacion_municipios_filtrado.csv'
+archivo_salida = 'poblacion_municipios_filtrado.json'
 
 # Solo incluimos el total y las edades de 0 a 9 años
 valores_edad = [
@@ -21,6 +25,44 @@ valor_periodo = '1 de enero de 2022'
 
 # Leer datos
 df = pd.read_csv(archivo_entrada, sep=';', encoding='utf-8', low_memory=False)
+
+# Configurar geocoder con timeout más corto
+geolocator = Nominatim(user_agent="poblacion_municipios_geocoder", timeout=10)
+geocode = RateLimiter(geolocator.geocode, min_delay_seconds=2, max_retries=3)
+
+# Función para buscar coordenadas usando CP + Nombre con manejo de errores
+def obtener_coords(row):
+    def safe_geocode(query, max_attempts=3):
+        for attempt in range(max_attempts):
+            try:
+                location = geocode(query, timeout=5)
+                return location
+            except (GeocoderTimedOut, GeocoderServiceError) as e:
+                print(f"Intento {attempt + 1} falló para '{query}': {e}")
+                if attempt < max_attempts - 1:
+                    time.sleep(2 ** attempt)  # Backoff exponencial
+                continue
+            except Exception as e:
+                print(f"Error inesperado para '{query}': {e}")
+                break
+        return None
+    
+    # Intentar primero con CP + Nombre
+    query = f"{row['CP']} {row['Nombre']}, España"
+    location = safe_geocode(query)
+    
+    if location:
+        return pd.Series([location.latitude, location.longitude])
+    
+    # Si no encuentra, intentar solo con el nombre
+    query = f"{row['Nombre']}, España"
+    location = safe_geocode(query)
+    
+    if location:
+        return pd.Series([location.latitude, location.longitude])
+    
+    print(f"No se encontraron coordenadas para: {row['CP']} {row['Nombre']}")
+    return pd.Series([None, None])
 
 # Conversión de tipos
 for col in ["Edad (grupos quinquenales)", "Municipios", "Periodo", "Sexo"]:
@@ -60,11 +102,38 @@ df_final = pd.merge(df_total, df_0_9, on=["Municipios", "Sexo", "Periodo"])
 # Calcular porcentaje y convertir a string con "%"
 df_final["% De 0 a 9 años"] = ((df_final["De 0 a 9 años"] / df_final["Total"]) * 100).round(2).astype(str) + "%"
 
+# Separar "Municipios" en "CP" y "Nombre"
+df_final[["CP", "Nombre"]] = df_final["Municipios"].str.split(" ", n=1, expand=True)
+
+# Obtener coordenadas para cada municipio
+print(f"Obteniendo coordenadas de {len(df_final)} municipios...")
+print("Esto puede tardar varios minutos debido a los límites de la API...")
+
+# Función para aplicar geocodificación con progreso
+def geocode_with_progress(df):
+    lat_values = []
+    lng_values = []
+    total = len(df)
+    
+    for i, (_, row) in enumerate(df.iterrows()):
+        print(f"Procesando {i+1}/{total}: {row['CP']} {row['Nombre']}", end="... ")
+        coords = obtener_coords(row)
+        lat_values.append(coords.iloc[0])  # Extraer lat del Series
+        lng_values.append(coords.iloc[1])  # Extraer lng del Series
+        print(f"✓ {coords.iloc[0]}, {coords.iloc[1]}" if coords.iloc[0] is not None else "✗ Sin coordenadas")
+    
+    return lat_values, lng_values
+
+# Aplicar geocodificación
+lat_values, lng_values = geocode_with_progress(df_final)
+df_final["lat"] = lat_values
+df_final["lng"] = lng_values
+
 # Reordenar columnas
-cols = ["Sexo", "Municipios", "Periodo", "Total", "De 0 a 9 años", "% De 0 a 9 años"]
+cols = ["Sexo", "CP", "Nombre", "Periodo", "Total", "De 0 a 9 años", "% De 0 a 9 años", "lat", "lng"]
 df_final = df_final[cols]
 
-# Guardar resultado
-df_final.to_csv(archivo_salida, index=False, sep=';', encoding='utf-8-sig')
+# Guardar resultado en JSON
+df_final.to_json(archivo_salida, orient='records', force_ascii=False, indent=2)
 
 print(f"Filtrado completado. Filas resultantes: {len(df_final)}")
