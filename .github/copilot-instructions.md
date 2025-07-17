@@ -1,4 +1,5 @@
 # Code style Guide
+
 - Include JSDOC comments only on methods and properties that are not self-explanatory.
 - Ensure that all code adheres to the project's coding standards and style guide.
 - Use descriptive variable and function names to enhance code readability.
@@ -6,8 +7,11 @@
 - If the styles are larger than 30 lines, consider using external stylesheets.
 - If the HTML is larger than 30 lines, consider using external templates.
 - If the component is larger than 100 lines and the HTML or the styles are not trivial, use external templates and stylesheets.
+- Allways put the private methods after the public methods in the class.
+- Allways put the private properties after the public properties in the class.
 
 # Human interaction guidelines
+
 - The developer is an experienced Angular developer with a strong understanding of the project.
 - The developer is familiar with the project's architecture and coding standards.
 - If a code you change wasn't meeting the project's coding standards, you can refactor it to meet the standards, but also inform the developer what was changed and why.
@@ -20,6 +24,7 @@
 - When making big changes in multiple commits, leave comments with the remaining change in each step, and remove them when the change is complete.
 
 # Quality assurance
+
 - Write unit tests using Jasmine and Karma for all the new features and bug fixes.
 - Write E2E tests using Cypress for all the new features and bug fixes.
 - Allways try to build, run and test the code before committing.
