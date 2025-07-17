@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { SpainMapComponent } from './spain-map.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  template: '',
+  standalone: true,
+  imports: [SpainMapComponent],
+  template: `<app-spain-map></app-spain-map>`,
   styles: [
     `
       :host {
